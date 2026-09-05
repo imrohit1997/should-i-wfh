@@ -17,8 +17,9 @@ class Settings(BaseSettings):
     # ── TomTom ─────────────────────────────────────────────────────────────
     tomtom_api_key: str = ""
 
-    # ── Open-Meteo ─────────────────────────────────────────────────────────
-    open_meteo_base_url: str = "https://api.open-meteo.com/v1"
+    # ── WeatherAPI ─────────────────────────────────────────────────────────
+    weather_api_key: str = ""
+    weather_api_base_url: str = "http://api.weatherapi.com/v1"
 
     # ── Scraper ────────────────────────────────────────────────────────────
     scraper_interval_seconds: int = 900          # 15 minutes
