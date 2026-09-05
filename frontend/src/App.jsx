@@ -32,6 +32,167 @@ function formatCoord(loc) {
   return `${loc.lat.toFixed(4)}°N, ${loc.lng.toFixed(4)}°E`
 }
 
+/* ── About Section ──────────────────────────────────────────────── */
+function AboutSection() {
+  return (
+    <section className="about-section" id="about">
+      <div className="about-section-inner">
+        {/* Header */}
+        <div>
+          <div className="about-header">
+            <div className="about-header-icon" aria-hidden>ℹ️</div>
+            <div>
+              <h2 className="about-title">About This App</h2>
+              <div className="about-subtitle">Commute Friction Engine · v1.0</div>
+            </div>
+          </div>
+          <p className="about-description" style={{ marginTop: '0.75rem' }}>
+            <strong>Should I WFH?</strong> is a real-time commute analysis tool designed for Kolkata.
+            It aggregates live weather data, traffic conditions, and hyperlocal alerts to compute a
+            <em> Commute Friction Score</em> — a single number from 0–100 that tells you whether
+            it's worth braving your commute today.
+          </p>
+        </div>
+
+        <hr className="about-divider" />
+
+        {/* Feature Cards */}
+        <div>
+          <p className="panel-title">✨ Key Features</p>
+          <div className="about-cards-grid">
+            <div className="about-card">
+              <div className="about-card-icon">🌧️</div>
+              <div className="about-card-title">Rain-Aware Scoring</div>
+              <div className="about-card-text">
+                Factors in past 6 hours and upcoming 6 hours of precipitation. Waterlogging
+                persists long after rain stops — our algorithm accounts for that.
+              </div>
+            </div>
+            <div className="about-card">
+              <div className="about-card-icon">🚗</div>
+              <div className="about-card-title">Live Traffic Analysis</div>
+              <div className="about-card-text">
+                Compares your real-time commute duration against the historical baseline
+                to measure actual delay percentage on your route.
+              </div>
+            </div>
+            <div className="about-card">
+              <div className="about-card-icon">🚨</div>
+              <div className="about-card-title">Override Triggers</div>
+              <div className="about-card-text">
+                Automatically flags mandatory WFH when road closures or waterlogging
+                events are detected directly on your commute path.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr className="about-divider" />
+
+        {/* How It Works */}
+        <div>
+          <p className="panel-title">⚙️ How It Works</p>
+          <div className="steps-list">
+            <div className="step-item">
+              <div className="step-number">1</div>
+              <div className="step-content">
+                <div className="step-title">Set Your Locations</div>
+                <div className="step-desc">
+                  Pin your home and office on the map, or search by name. The app remembers
+                  your locations for convenience.
+                </div>
+              </div>
+            </div>
+            <div className="step-item">
+              <div className="step-number">2</div>
+              <div className="step-content">
+                <div className="step-title">Fetch Real-Time Data</div>
+                <div className="step-desc">
+                  The backend fires parallel async requests to Mapbox (driving time),
+                  Open-Meteo (rainfall), and TomTom (traffic incidents) to build a complete picture.
+                </div>
+              </div>
+            </div>
+            <div className="step-item">
+              <div className="step-number">3</div>
+              <div className="step-content">
+                <div className="step-title">Compute the Friction Score</div>
+                <div className="step-desc">
+                  A weighted algorithm calculates your score: Past Rainfall (40%), Current/Future
+                  Rainfall (20%), and Traffic Delay (40%). A score ≥ 65 means WFH.
+                </div>
+              </div>
+            </div>
+            <div className="step-item">
+              <div className="step-number">4</div>
+              <div className="step-content">
+                <div className="step-title">Get Your Verdict</div>
+                <div className="step-desc">
+                  Receive a clear WFO, WFH, or Mandatory WFH recommendation along with a
+                  detailed breakdown of each contributing factor.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr className="about-divider" />
+
+        {/* APIs Used */}
+        <div>
+          <p className="panel-title">🔌 APIs & Data Sources</p>
+          <div className="api-list">
+            <div className="api-badge">
+              <div className="api-badge-icon mapbox">🗺️</div>
+              <div className="api-badge-content">
+                <div className="api-badge-name">Mapbox Directions API</div>
+                <div className="api-badge-desc">
+                  Provides driving-traffic routing with real-time travel duration and
+                  route polylines for visual display.
+                </div>
+              </div>
+              <span className="api-badge-tag freemium">Freemium</span>
+            </div>
+            <div className="api-badge">
+              <div className="api-badge-icon openmeteo">🌦️</div>
+              <div className="api-badge-content">
+                <div className="api-badge-name">WeatherAPI</div>
+                <div className="api-badge-desc">
+                  Provides comprehensive weather data including historical and forecast precipitation
+                  grids for past 6h and next 6h windows.
+                </div>
+              </div>
+              <span className="api-badge-tag freemium">Freemium</span>
+            </div>
+            <div className="api-badge">
+              <div className="api-badge-icon tomtom">🚦</div>
+              <div className="api-badge-content">
+                <div className="api-badge-name">TomTom Traffic Incidents</div>
+                <div className="api-badge-desc">
+                  Real-time traffic incident data including road closures, accidents,
+                  and construction on your commute bounding box.
+                </div>
+              </div>
+              <span className="api-badge-tag freemium">Freemium</span>
+            </div>
+            <div className="api-badge">
+              <div className="api-badge-icon geocoding">📍</div>
+              <div className="api-badge-content">
+                <div className="api-badge-name">Mapbox Geocoding API</div>
+                <div className="api-badge-desc">
+                  Forward and reverse geocoding for location search autocomplete
+                  and human-readable address display.
+                </div>
+              </div>
+              <span className="api-badge-tag freemium">Freemium</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function App() {
   const [homeLocation,   setHomeLocation]   = useState(DEFAULT_HOME)
   const [officeLocation, setOfficeLocation] = useState(DEFAULT_OFFICE)
@@ -97,7 +258,19 @@ export default function App() {
           <div className="header-title">Should I WFH?</div>
           <div className="header-sub">Commute Friction Engine · Kolkata</div>
         </div>
-        <span className="header-badge">Live Analysis</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <a href="#about" style={{
+            color: 'var(--text-muted)',
+            textDecoration: 'none',
+            fontSize: '0.85rem',
+            fontWeight: 500,
+            transition: 'color 0.2s'
+          }} onMouseEnter={(e) => e.target.style.color = 'var(--text-primary)'}
+             onMouseLeave={(e) => e.target.style.color = 'var(--text-muted)'}>
+            About
+          </a>
+          <span className="header-badge">Live Analysis</span>
+        </div>
       </header>
 
       {/* ── Main ────────────────────────────────────────────────────────── */}
@@ -173,7 +346,7 @@ export default function App() {
 
           </aside>
 
-          {/* ── Map + Result (right column on desktop) ────────────────────── */}
+          {/* ── Map (right column on desktop) ────────────────────── */}
           <section className="map-section">
 
             {/* Map */}
@@ -187,22 +360,13 @@ export default function App() {
               />
             </div>
 
-            {/* Result card */}
-            {result
-              ? <ResultCard result={result} />
-              : !loading && (
-                  <div className="panel idle-state">
-                    <div className="idle-icon" aria-hidden>🌧️</div>
-                    <p className="idle-text">
-                      Set your home and office locations on the map, pick a departure time,
-                      and hit <strong>Should I WFH?</strong> to get your personalised commute verdict.
-                    </p>
-                  </div>
-                )
-            }
           </section>
 
         </div>
+
+        {/* ── About Section ────────────────────────────────────────────── */}
+        <AboutSection />
+
       </main>
 
       {/* ── Mobile bottom CTA bar ───────────────────────────────────────── */}
@@ -228,8 +392,24 @@ export default function App() {
 
       {/* ── Footer ─────────────────────────────────────────────────────────────── */}
       <footer className="app-footer">
-        Commute Friction Engine · Data from Mapbox, Open-Meteo, TomTom · Built for Kolkata
+        Commute Friction Engine · Data from Mapbox, WeatherAPI, TomTom · Built for Kolkata
       </footer>
+
+      {/* ── Result Modal ──────────────────────────────────────────────────────── */}
+      {result && (
+        <div className="modal-overlay" onClick={() => setResult(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="modal-close" 
+              onClick={() => setResult(null)}
+              aria-label="Close"
+            >
+              ✕
+            </button>
+            <ResultCard result={result} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
