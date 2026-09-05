@@ -196,7 +196,8 @@ main {
 
 /* ─── Map container ──────────────────────────────────────────────────────── */
 .map-container {
-  height: 300px;
+  height: 40vh;
+  min-height: 280px;
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--border);
@@ -206,7 +207,8 @@ main {
 
 @media (min-width: 640px) {
   .map-container {
-    height: 380px;
+    height: 50vh;
+    min-height: 380px;
   }
 }
 
@@ -277,7 +279,8 @@ main {
   box-shadow: var(--shadow-md);
   list-style: none;
   z-index: 50;
-  max-height: 240px;
+  max-height: 40vh;
+  min-height: 150px;
   overflow-y: auto;
 }
 
@@ -392,6 +395,27 @@ main {
   position: relative;
   overflow: hidden;
   border: 1px solid transparent;
+}
+
+@media (min-width: 1024px) {
+  .verdict-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    padding: 2.5rem;
+  }
+  .verdict-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+  }
+  .verdict-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
 }
 
 .verdict-card::before {
@@ -665,6 +689,13 @@ main {
   overflow-y: auto;
   border-radius: var(--radius-xl);
   animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 1024px) {
+  .modal-content {
+    max-width: 900px;
+    overflow-y: hidden;
+  }
 }
 .modal-content::-webkit-scrollbar { display: none; }
 
