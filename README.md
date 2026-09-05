@@ -61,6 +61,7 @@ should_I_WFH/
     ├── src/
     │   ├── App.jsx
     │   ├── components/
+    │   │   ├── LocationSearch.jsx
     │   │   ├── MapPicker.jsx
     │   │   ├── ScoreGauge.jsx
     │   │   ├── ResultCard.jsx
@@ -106,6 +107,16 @@ Open `http://localhost:5173` — the Vite dev server proxies `/api` to port 8000
 
 ---
 
+## UI / UX & Responsiveness
+
+The frontend is designed with an emphasis on **responsive layouts** across devices:
+- **Mobile First**: Dynamic viewport-based (`vh`) heights are used for the map container and search dropdowns to prevent overflow on smaller devices and adapt seamlessly to any screen height.
+- **Desktop Modes**:
+  - The main application layout utilizes CSS Grid to display a split-view on desktop (Left panel with location inputs and About section, Right section spanning the full height with the interactive map).
+  - The Verdict pop-up expands into a spacious landscape grid side-by-side mode on desktop displays, completely eliminating the need for vertical scrolling.
+
+---
+
 ## API Keys (Free Tier)
 
 | Service | Sign up | Free tier |
@@ -131,8 +142,7 @@ TOMTOM_API_KEY=xxxxxxxx
 ```json
 {
   "home_location":   { "lat": 22.5726, "lng": 88.3639 },
-  "office_location": { "lat": 22.5780, "lng": 88.4310 },
-  "departure_time":  "2026-09-02T08:30:00Z"
+  "office_location": { "lat": 22.5780, "lng": 88.4310 }
 }
 ```
 
