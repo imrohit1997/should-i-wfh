@@ -42,16 +42,20 @@ async def evaluate_commute(payload: EvaluateRequest) -> EvaluateResponse:
 
     home = payload.home_location
     office = payload.office_location
+    is_return_trip = payload.is_return_trip
+
+    origin = office if is_return_trip else home
+    destination = home if is_return_trip else office
 
     # ── Parallel data fetch ────────────────────────────────────────────────────
     route_task = asyncio.create_task(
-        get_route(home.lat, home.lng, office.lat, office.lng)
+        get_route(origin.lat, origin.lng, destination.lat, destination.lng)
     )
     weather_task = asyncio.create_task(
-        get_precipitation(home.lat, home.lng)
+        get_precipitation(origin.lat, origin.lng)
     )
     incidents_task = asyncio.create_task(
-        get_incidents(home.lat, home.lng, office.lat, office.lng)
+        get_incidents(origin.lat, origin.lng, destination.lat, destination.lng)
     )
 
     route, (past_rain, future_rain), incidents = await asyncio.gather(
@@ -70,6 +74,7 @@ async def evaluate_commute(payload: EvaluateRequest) -> EvaluateResponse:
         baseline_commute_min=route.baseline_duration_min,
         road_closed_on_route=incidents.road_closed_on_route,
         waterlogging_alert=waterlogging_alert,
+        is_return_trip=is_return_trip,
     )
 
     # Primary factor label

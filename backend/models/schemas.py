@@ -31,6 +31,9 @@ class Verdict(str, Enum):
     WFH = "WFH"
     WFO = "WFO"
     MANDATORY_WFH = "MANDATORY_WFH"   # triggered by override conditions
+    LEAVE_NOW = "LEAVE_NOW"           # return trip: clear or impending rain
+    WAIT_IT_OUT = "WAIT_IT_OUT"       # return trip: wait for traffic/rain to pass
+    STAY_IN_OFFICE = "STAY_IN_OFFICE" # return trip: mandatory stay
 
 
 # ── Request ───────────────────────────────────────────────────────────────────
@@ -41,6 +44,10 @@ class EvaluateRequest(BaseModel):
     departure_time: datetime = Field(
         default_factory=datetime.utcnow,
         description="ISO-8601 UTC departure time",
+    )
+    is_return_trip: bool = Field(
+        default=False,
+        description="If True, commutes from office to home.",
     )
 
 

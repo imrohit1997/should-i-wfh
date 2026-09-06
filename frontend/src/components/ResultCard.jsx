@@ -29,6 +29,27 @@ const VERDICT_CONFIG = {
     headline: 'Do NOT commute — critical condition detected.',
     icon: '🚨',
   },
+  LEAVE_NOW: {
+    cls: 'wfo',
+    badge: 'Leave Now',
+    emoji: '🏃',
+    headline: 'Hit the road — beat the weather/traffic.',
+    icon: '✅',
+  },
+  WAIT_IT_OUT: {
+    cls: 'wfh', 
+    badge: 'Wait it Out',
+    emoji: '☕',
+    headline: 'Stay put — let the traffic/rain clear up.',
+    icon: '⏳',
+  },
+  STAY_IN_OFFICE: {
+    cls: 'mandatory',
+    badge: 'Stay in Office',
+    emoji: '🛑',
+    headline: 'Do NOT leave — critical condition detected.',
+    icon: '🚨',
+  },
 }
 
 function StatChip({ label, value, unit }) {

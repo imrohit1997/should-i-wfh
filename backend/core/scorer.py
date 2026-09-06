@@ -74,6 +74,7 @@ def compute_score(
     baseline_commute_min: float,
     road_closed_on_route: bool,
     waterlogging_alert: bool,
+    is_return_trip: bool = False,
 ) -> tuple[float, Verdict, str | None, list[ScoreFactor]]:
     """
     Returns (score, verdict, override_reason, factors).
@@ -81,11 +82,19 @@ def compute_score(
 
     # ── Override triggers ────────────────────────────────────────────────
     if road_closed_on_route:
-        reason = "Road closure detected directly on your route (TomTom)"
-        return 100.0, Verdict.MANDATORY_WFH, reason, []
+        if is_return_trip:
+            reason = "Road closure on route back home (TomTom)"
+            return 100.0, Verdict.STAY_IN_OFFICE, reason, []
+        else:
+            reason = "Road closure detected directly on your route (TomTom)"
+            return 100.0, Verdict.MANDATORY_WFH, reason, []
     if waterlogging_alert:
-        reason = "Active waterlogging alert on a major route node (local scraper)"
-        return 100.0, Verdict.MANDATORY_WFH, reason, []
+        if is_return_trip:
+            reason = "Active waterlogging alert on route (local scraper)"
+            return 100.0, Verdict.STAY_IN_OFFICE, reason, []
+        else:
+            reason = "Active waterlogging alert on a major route node (local scraper)"
+            return 100.0, Verdict.MANDATORY_WFH, reason, []
 
     # ── Factor calculation ────────────────────────────────────────────────
     pr_pts, pr_detail = _past_rain_score(past_rain_mm)
@@ -113,12 +122,22 @@ def compute_score(
         ),
     ]
 
-    score = pr_pts + fr_pts + tr_pts
-    score = min(round(score, 1), 100.0)
-
-    # Primary factor = highest contributor
-    primary = max(factors, key=lambda f: f.contribution)
-
-    verdict = Verdict.WFH if score >= WFH_THRESHOLD else Verdict.WFO
+    if is_return_trip:
+        # Return trip logic: Wait Friction Score
+        # Past rain & traffic INCREASE friction to leave now
+        # Future rain DECREASES friction to leave now (urges early departure)
+        wait_friction = pr_pts + tr_pts - fr_pts
+        score = max(0.0, min(round(wait_friction, 1), 100.0))
+        
+        if score < 30.0:
+            verdict = Verdict.LEAVE_NOW
+        elif score < WFH_THRESHOLD:
+            verdict = Verdict.WAIT_IT_OUT
+        else:
+            verdict = Verdict.STAY_IN_OFFICE
+    else:
+        score = pr_pts + fr_pts + tr_pts
+        score = min(round(score, 1), 100.0)
+        verdict = Verdict.WFH if score >= WFH_THRESHOLD else Verdict.WFO
 
     return score, verdict, None, factors

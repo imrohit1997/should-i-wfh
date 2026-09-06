@@ -24,10 +24,11 @@ const api = axios.create({
  * @param {string} params.departureTime  ISO-8601 string
  * @returns {Promise<import('./types').EvaluateResponse>}
  */
-export async function evaluateCommute({ homeLocation, officeLocation }) {
+export async function evaluateCommute({ homeLocation, officeLocation, isReturnTrip }) {
   const { data } = await api.post('/evaluate-commute', {
     home_location:   { lat: homeLocation.lat,   lng: homeLocation.lng },
     office_location: { lat: officeLocation.lat,  lng: officeLocation.lng },
+    is_return_trip: isReturnTrip || false,
   })
   return data
 }

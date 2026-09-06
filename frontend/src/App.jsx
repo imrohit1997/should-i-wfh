@@ -196,6 +196,7 @@ function AboutSection() {
 export default function App() {
   const [homeLocation,   setHomeLocation]   = useState(DEFAULT_HOME)
   const [officeLocation, setOfficeLocation] = useState(DEFAULT_OFFICE)
+  const [isReturnTrip,   setIsReturnTrip]   = useState(false)
   const [activePin,      setActivePin]      = useState(null)
   const [result,         setResult]         = useState(null)
   const [loading,        setLoading]        = useState(false)
@@ -227,6 +228,40 @@ export default function App() {
     if (type === 'office') setOfficeLocation(locWithCoords)
   }, [])
 
+  const handleUseGPS = async (type) => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser')
+      return
+    }
+    setLoading(true)
+    setError(null)
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
+        const locWithCoords = { lat: latitude, lng: longitude, name: 'Current Location' }
+        if (MAPBOX_TOKEN) {
+          try {
+            const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${MAPBOX_TOKEN}&types=poi,address,place,neighborhood&limit=1`
+            const res = await fetch(url)
+            const data = await res.json()
+            if (data.features && data.features.length > 0) {
+              locWithCoords.name = data.features[0].place_name
+            }
+          } catch (err) {
+            console.error('Reverse geocoding error:', err)
+          }
+        }
+        if (type === 'home') setHomeLocation(locWithCoords)
+        if (type === 'office') setOfficeLocation(locWithCoords)
+        setLoading(false)
+      },
+      (err) => {
+        setError('Could not get current location: ' + err.message)
+        setLoading(false)
+      }
+    )
+  }
+
   const handleEvaluate = async () => {
     if (!homeLocation || !officeLocation) return
     setLoading(true)
@@ -235,6 +270,7 @@ export default function App() {
       const data = await evaluateCommute({
         homeLocation,
         officeLocation,
+        isReturnTrip,
       })
       setResult(data)
     } catch (err) {
@@ -284,34 +320,99 @@ export default function App() {
             <div className="panel">
               <p className="panel-title">📍 Your Locations</p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                {/* Home */}
-                <LocationSearch
-                  mapboxToken={MAPBOX_TOKEN}
-                  placeholder="Home"
-                  value={homeLocation?.name || formatCoord(homeLocation)}
-                  active={activePin === 'home'}
-                  iconClass="home"
-                  onClick={() => setActivePin(activePin === 'home' ? null : 'home')}
-                  onSelect={(loc) => {
-                    setHomeLocation({ lat: loc.lngLat.lat, lng: loc.lngLat.lng, name: loc.name })
-                    setActivePin(null)
-                  }}
-                />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', position: 'relative' }}>
+                {/* Swap Button */}
+                <div style={{ position: 'absolute', top: '50%', left: '1.25rem', transform: 'translate(-50%, -50%)', zIndex: 10 }}>
+                  <button
+                    onClick={() => setIsReturnTrip(!isReturnTrip)}
+                    className="swap-button"
+                    title="Swap locations"
+                    style={{
+                      background: 'var(--bg-panel)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '50%',
+                      width: '28px',
+                      height: '28px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      color: 'var(--text-muted)',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                      transition: 'color 0.2s, background 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = 'var(--text-primary)';
+                      e.currentTarget.style.background = 'var(--bg-hover)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = 'var(--text-muted)';
+                      e.currentTarget.style.background = 'var(--bg-panel)';
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16" />
+                    </svg>
+                  </button>
+                </div>
 
-                {/* Office */}
-                <LocationSearch
-                  mapboxToken={MAPBOX_TOKEN}
-                  placeholder="Office"
-                  value={officeLocation?.name || formatCoord(officeLocation)}
-                  active={activePin === 'office'}
-                  iconClass="office"
-                  onClick={() => setActivePin(activePin === 'office' ? null : 'office')}
-                  onSelect={(loc) => {
-                    setOfficeLocation({ lat: loc.lngLat.lat, lng: loc.lngLat.lng, name: loc.name })
-                    setActivePin(null)
-                  }}
-                />
+                {isReturnTrip ? (
+                  <>
+                    <LocationSearch
+                      mapboxToken={MAPBOX_TOKEN}
+                      placeholder="Office (Origin)"
+                      value={officeLocation?.name || formatCoord(officeLocation)}
+                      active={activePin === 'office'}
+                      iconClass="office"
+                      onClick={() => setActivePin(activePin === 'office' ? null : 'office')}
+                      onSelect={(loc) => {
+                        setOfficeLocation({ lat: loc.lngLat.lat, lng: loc.lngLat.lng, name: loc.name })
+                        setActivePin(null)
+                      }}
+                      onUseGPS={() => handleUseGPS('office')}
+                    />
+                    <LocationSearch
+                      mapboxToken={MAPBOX_TOKEN}
+                      placeholder="Home (Destination)"
+                      value={homeLocation?.name || formatCoord(homeLocation)}
+                      active={activePin === 'home'}
+                      iconClass="home"
+                      onClick={() => setActivePin(activePin === 'home' ? null : 'home')}
+                      onSelect={(loc) => {
+                        setHomeLocation({ lat: loc.lngLat.lat, lng: loc.lngLat.lng, name: loc.name })
+                        setActivePin(null)
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <LocationSearch
+                      mapboxToken={MAPBOX_TOKEN}
+                      placeholder="Home (Origin)"
+                      value={homeLocation?.name || formatCoord(homeLocation)}
+                      active={activePin === 'home'}
+                      iconClass="home"
+                      onClick={() => setActivePin(activePin === 'home' ? null : 'home')}
+                      onSelect={(loc) => {
+                        setHomeLocation({ lat: loc.lngLat.lat, lng: loc.lngLat.lng, name: loc.name })
+                        setActivePin(null)
+                      }}
+                      onUseGPS={() => handleUseGPS('home')}
+                    />
+                    <LocationSearch
+                      mapboxToken={MAPBOX_TOKEN}
+                      placeholder="Office (Destination)"
+                      value={officeLocation?.name || formatCoord(officeLocation)}
+                      active={activePin === 'office'}
+                      iconClass="office"
+                      onClick={() => setActivePin(activePin === 'office' ? null : 'office')}
+                      onSelect={(loc) => {
+                        setOfficeLocation({ lat: loc.lngLat.lat, lng: loc.lngLat.lng, name: loc.name })
+                        setActivePin(null)
+                      }}
+                    />
+                  </>
+                )}
               </div>
             </div>
 
